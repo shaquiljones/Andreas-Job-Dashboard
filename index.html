@@ -7,35 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #001F3F; /* Deep Navy Blue (Her favorite!) */
-            --accent: #D4AF37; /* Gold for elegance */
-            --bg: #F0F4F8; /* Soft cool-toned background */
+            --primary: #001F3F; /* Deep Navy Blue */
+            --accent: #D4AF37; /* Gold */
+            --bg: #F0F4F8;
             --text: #1A1A1A;
             --card-bg: #FFFFFF;
-            --btn-hover: #003366;
         }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, #000814 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        header img.hero-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover;
-            opacity: 0.2;
-            z-index: 0;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        header { background: linear-gradient(135deg, var(--primary) 0%, #000814 100%); color: white; padding: 40px 20px; text-align: center; position: relative; overflow: hidden; }
+        header img.hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.2; z-index: 0; }
         .header-content { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
         .profile-pic { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--accent); object-fit: cover; }
         h1 { font-family: 'Playfair Display', serif; color: var(--accent); margin: 0; font-size: 2.5rem; }
@@ -53,20 +33,19 @@
         .job-card { background: var(--card-bg); margin-bottom: 20px; border-radius: 12px; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 5px solid var(--accent); transition: 0.3s; }
         .job-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
         .job-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 1.4rem; }
-        .job-meta { display: flex; justify-content: space-between; font-size: 0.9rem; color: #666; margin-bottom: 15px; }
+        .job-meta { display: flex; justify-content: space-between; font-size: 0.9rem; color: #666; margin-bottom: 15px; flex-wrap: wrap; gap: 5px; }
         .job-tags span { background: #EEE; padding: 4px 10px; border-radius: 12px; font-size: 0.8rem; margin-right: 5px; }
         .why-fit { background: #F9F7F3; padding: 15px; border-radius: 8px; margin: 15px 0; font-style: italic; border-left: 3px solid var(--primary); }
-        .actions { display: flex; gap: 15px; margin-top: 15px; }
+        .actions { display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap; }
         .btn { text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none; }
         .btn-apply { background: var(--primary); color: white; }
         .btn-cover { background: white; color: var(--primary); border: 1px solid var(--primary); }
-        
-        /* Modal */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 600px; position: relative; }
         .close { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #666; }
         .cover-letter-text { white-space: pre-wrap; background: #f9f9f9; padding: 20px; border-radius: 8px; font-family: 'Poppins', sans-serif; line-height: 1.6; }
         .copy-btn { margin-top: 15px; background: var(--accent); color: var(--primary); }
+        .loading { text-align: center; color: var(--primary); font-size: 1.2rem; margin-top: 50px; }
     </style>
 </head>
 <body>
@@ -77,21 +56,21 @@
         <img src="https://z-cdn-media.chatglm.cn/files/b050221b-404d-45ab-94ed-a2d9229d2401.jpeg?auth_key=1882319334-afbe1ff920134896bde96c7fcc63be1c-0-b5a84fedfc51a4ac8cfa7b3928978b94" class="profile-pic" alt="Andrea">
         <div>
             <h1>Andrea Morris-Brown</h1>
-            <div class="subtitle">Black. Mom. Excellence. | Cosmetologist & Customer Service Pro</div>
+            <div class="subtitle">Black. Mom. Excellence. | Live Job Dashboard</div>
         </div>
     </div>
 </header>
 
 <div class="controls">
-    <button class="category-btn active" onclick="filterJobs('all', this)">All Leads</button>
-    <button class="category-btn" onclick="filterJobs('cosmetology', this)">Cosmetology</button>
-    <button class="category-btn" onclick="filterJobs('customer-service', this)">Customer Service</button>
-    <button class="category-btn" onclick="filterJobs('healthcare', this)">Healthcare Support</button>
-    <button class="category-btn" onclick="filterJobs('events', this)">Gallery & Events</button>
+    <button class="category-btn active" onclick="searchJobs('all', this)">All Leads</button>
+    <button class="category-btn" onclick="searchJobs('cosmetology', this)">Cosmetology</button>
+    <button class="category-btn" onclick="searchJobs('customer-service', this)">Customer Service</button>
+    <button class="category-btn" onclick="searchJobs('healthcare', this)">Healthcare Support</button>
+    <button class="category-btn" onclick="searchJobs('events', this)">Gallery & Events</button>
     
     <div class="alert-section">
         <label style="display: inline-flex; align-items: center; gap: 10px; font-weight: 600; color: var(--primary);">
-            <span>Enable Daily Email Alerts to andream.b.101@gmail.com</span>
+            <span>Enable Daily Email Alerts</span>
             <label class="switch">
                 <input type="checkbox" id="alertToggle" onchange="toggleAlerts()">
                 <span class="slider"></span>
@@ -101,10 +80,9 @@
 </div>
 
 <div class="container" id="jobBoard">
-    <!-- Jobs will be injected here via JS -->
+    <div class="loading">Searching for the latest opportunities near East Orange, NJ...</div>
 </div>
 
-<!-- Cover Letter Modal -->
 <div id="coverLetterModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
@@ -115,143 +93,129 @@
 </div>
 
 <script>
-    // Mock Data tailored to Andrea's resume, sorted by distance from 47 Schuyler Terrace, East Orange NJ
-       const jobs = [
-        {
-            id: 1,
-            category: 'cosmetology',
-            title: 'Master Hair Stylist & Colorist',
-            company: 'Elegance Salon & Spa',
-            distance: 1.5,
-            url: 'https://www.indeed.com/jobs?q=Hair+Stylist+Cosmetology&l=East+Orange%2C+NJ',
-            whyFit: 'Andrea’s 4.0 GPA in SFSC’s Cosmetology program and mastery of Chemical Reformation & Chromatology make her an ideal fit. Her customer service background at CVS ensures she brings both technical precision and excellent client care.',
-            coverLetter: 'Dear Hiring Manager,\n\nI am writing to express my interest in the Master Hair Stylist & Colorist position. As a recent graduate of South Florida State College’s Cosmetology program with a 4.0 GPA and 1,200 contact hours, I have honed my skills in precision cutting, chemical reformation, and color theory. My background in customer service ensures that I can build and maintain a loyal client base while delivering exceptional salon experiences. I am eager to bring my dedication to client care and technical excellence to your team.\n\nSincerely,\nAndrea Morris-Brown\n(908) 425-0028'
-        },
-        {
-            id: 2,
-            category: 'customer-service',
-            title: 'Remote Customer Service Representative',
-            company: 'Horizon Health Solutions',
-            distance: 0.0, // Remote
-            url: 'https://www.indeed.com/jobs?q=Customer+Service+Representative+Remote&l=East+Orange%2C+NJ',
-            whyFit: 'Currently excelling as a CSR for CVS Health, Andrea navigates healthcare systems and member inquiries seamlessly. Her remote experience and dedication make her a plug-and-play asset for this role.',
-            coverLetter: 'Dear Hiring Manager,\n\nI am excited to apply for the Remote Customer Service Representative role. Currently, I serve as a CSR for CVS Health where I assist healthcare members with medical orders, benefit enrollment, and account management. My ability to navigate complex healthcare systems and resolve inquiries efficiently makes me a strong candidate. I am highly accustomed to remote work environments and committed to delivering empathetic, top-tier service.\n\nSincerely,\nAndrea Morris-Brown'
-        },
-        {
-            id: 3,
-            category: 'cosmetology',
-            title: 'Nail Technician & Salon Coordinator',
-            company: 'Glamour Nails East Orange',
-            distance: 0.8,
-            url: 'https://www.indeed.com/jobs?q=Nail+Technician&l=East+Orange%2C+NJ',
-            whyFit: 'Trained in manicuring, pedicuring, and nail extensions, Andrea pairs her salon operations skills with her experience coordinating events at MOFAC Gallery.',
-            coverLetter: 'Dear Hiring Manager,\n\nI am writing to apply for the Nail Technician & Salon Coordinator position. My cosmetology training included specialized instruction in manicuring, pedicuring, and nail extensions. Furthermore, my experience as a Student Life Coordinator equipped me with the operational and client relations skills needed to help manage a busy salon floor. I would love to bring my blend of technical beauty skills and operational coordination to your team.\n\nSincerely,\nAndrea Morris-Brown'
-        },
-        {
-            id: 4,
-            category: 'healthcare',
-            title: 'Patient Care Advocate',
-            company: 'East Orange General Hospital',
-            distance: 2.2,
-            url: 'https://www.indeed.com/jobs?q=Patient+Care+Advocate&l=East+Orange%2C+NJ',
-            whyFit: 'Andrea’s experience as a Caregiver at The Manor and her current healthcare CSR role give her a unique ability to blend empathy with administrative accuracy.',
-            coverLetter: 'Dear Hiring Manager,\n\nI am applying for the Patient Care Advocate position. With direct experience as a caregiver supporting elderly residents and my current role assisting CVS Health members, I possess a deep understanding of both patient empathy and healthcare administration. I am passionate about maintaining a safe, supportive environment and helping patients navigate their care seamlessly.\n\nSincerely,\nAndrea Morris-Brown'
-        },
-        {
-            id: 5,
-            category: 'events',
-            title: 'Gallery & Event Coordinator',
-            company: 'Montclair Art Association',
-            distance: 4.5,
-            url: 'https://www.indeed.com/jobs?q=Event+Coordinator&l=East+Orange%2C+NJ',
-            whyFit: 'Andrea previously managed art exhibits and coordinated public/private events at the MOFAC Gallery, perfectly aligning with this role’s requirements.',
-            coverLetter: 'Dear Hiring Manager,\n\nI am thrilled to apply for the Gallery & Event Coordinator role. Previously, I served as a Student Life Coordinator at the South Florida State College MOFAC Gallery, where I managed art exhibits, organized warehouse displays, and built strong client relationships for public and private events. I am confident that my background in gallery management and community engagement makes me an excellent fit for your association.\n\nSincerely,\nAndrea Morris-Brown'
+    // --- PASTE YOUR ADZUNA KEYS HERE ---
+    const ADZUNA_APP_ID = 'faf2922c';
+    const ADZUNA_APP_KEY = '7d10dc2ac7d053d877b9790b7b83ebd4';
+    // ------------------------------------
+
+    const ANDREA_EMAIL = "andream.b.101@gmail.com";
+    
+    // Resume templates for dynamic generation
+    const resumeContext = {
+        cosmetology: "As a recent graduate of South Florida State College’s Cosmetology program with a 4.0 GPA and 1,200 contact hours, I have honed my skills in precision cutting, chemical reformation, and color theory. My background in customer service ensures that I can build and maintain a loyal client base while delivering exceptional salon experiences.",
+        'customer-service': "Currently, I serve as a CSR for CVS Health where I assist healthcare members with medical orders, benefit enrollment, and account management. My ability to navigate complex systems and resolve inquiries efficiently makes me a strong candidate. I am highly accustomed to remote work environments and committed to delivering empathetic, top-tier service.",
+        healthcare: "With direct experience as a caregiver supporting elderly residents and my current role assisting CVS Health members, I possess a deep understanding of both patient empathy and healthcare administration. I am passionate about maintaining a safe, supportive environment and helping patients navigate their care seamlessly.",
+        events: "Previously, I served as a Student Life Coordinator at the South Florida State College MOFAC Gallery, where I managed art exhibits, organized warehouse displays, and built strong client relationships for public and private events. I am confident that my background in gallery management and community engagement makes me an excellent fit."
+    };
+
+    const searchQueries = {
+        'cosmetology': 'cosmetology hair stylist nail technician',
+        'customer-service': 'customer service representative remote',
+        'healthcare': 'patient care caregiver healthcare',
+        'events': 'event coordinator gallery assistant'
+    };
+
+    let currentCategory = 'all';
+
+    async function searchJobs(category, btn) {
+        if (btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
-    ];
+        currentCategory = category;
+        const board = document.getElementById('jobBoard');
+        board.innerHTML = '<div class="loading">Fetching fresh job leads...</div>';
 
-    // Sort jobs by distance (closest first, remote counts as 0)
-    jobs.sort((a, b) => a.distance - b.distance);
+        let categoriesToSearch = category === 'all' ? Object.keys(searchQueries) : [category];
+        let allJobs = [];
 
-    let currentJobs = [...jobs];
-    let alertEnabled = false;
+        for (let cat of categoriesToSearch) {
+            const query = searchQueries[cat];
+            const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&what=${query}&where=East+Orange%2C+NJ&distance=20&results_per_page=8&sort_by=date`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.results) {
+                    data.results.forEach(job => {
+                        allJobs.push({
+                            title: job.title,
+                            company: job.company.display_name,
+                            location: job.location.display_name,
+                            url: job.redirect_url,
+                            description: job.description.substring(0, 250) + '...',
+                            category: cat
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching jobs for " + cat, error);
+            }
+        }
 
-    function renderJobs() {
+        renderJobs(allJobs);
+    }
+
+    function renderJobs(jobs) {
         const board = document.getElementById('jobBoard');
         board.innerHTML = '';
-        if(currentJobs.length === 0) {
-            board.innerHTML = '<p style="text-align: center; color: var(--primary);">No jobs in this category right now. Check back tomorrow!</p>';
+        
+        if (jobs.length === 0) {
+            board.innerHTML = '<p style="text-align: center; color: var(--primary); font-size: 1.2rem;">No new jobs found today. Check back tomorrow!</p>';
             return;
         }
-        currentJobs.forEach(job => {
+
+        jobs.forEach(job => {
             const card = document.createElement('div');
             card.className = 'job-card';
             card.innerHTML = `
                 <h3>${job.title}</h3>
                 <div class="job-meta">
                     <span><strong>${job.company}</strong></span>
-                    <span>📍 ${job.distance === 0.0 ? 'Remote' : job.distance + ' miles from East Orange, NJ'}</span>
+                    <span>📍 ${job.location}</span>
                 </div>
                 <div class="job-tags">
                     <span>${job.category.replace('-', ' ')}</span>
                 </div>
+                <p style="font-size: 0.9rem; color: #444;">${job.description}</p>
                 <div class="why-fit">
                     <strong>Why Andrea is a perfect fit:</strong><br>
-                    ${job.whyFit}
+                    ${resumeContext[job.category]}
                 </div>
                 <div class="actions">
                     <a href="${job.url}" target="_blank" class="btn btn-apply">Apply Here</a>
-                    <button class="btn btn-cover" onclick="generateCoverLetter(${job.id})">Generate Cover Letter</button>
+                    <button class="btn btn-cover" onclick='generateCoverLetter(${JSON.stringify(job).replace(/'/g, "\\'")})'>Generate Cover Letter</button>
                 </div>
             `;
             board.appendChild(card);
         });
     }
 
-    function filterJobs(category, btn) {
-        // Update active button
-        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        if(category === 'all') {
-            currentJobs = [...jobs];
-        } else {
-            currentJobs = jobs.filter(job => job.category === category);
-        }
-        // Re-sort after filtering
-        currentJobs.sort((a, b) => a.distance - b.distance);
-        renderJobs();
-    }
-
-    function generateCoverLetter(id) {
-        const job = jobs.find(j => j.id === id);
-        document.getElementById('coverLetterBody').textContent = job.coverLetter;
+    function generateCoverLetter(job) {
+        const letter = `Dear Hiring Manager,\n\nI am writing to express my interest in the ${job.title} position at ${job.company}. ${resumeContext[job.category]} I am eager to bring my dedication and professional excellence to your team.\n\nThank you for your time and consideration. I look forward to the possibility of discussing this opportunity with you.\n\nSincerely,\nAndrea Morris-Brown\n(908) 425-0028\n${ANDREA_EMAIL}`;
+        
+        document.getElementById('coverLetterBody').textContent = letter;
         document.getElementById('coverLetterModal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('coverLetterModal').style.display = 'none';
-    }
+    function closeModal() { document.getElementById('coverLetterModal').style.display = 'none'; }
 
     function copyLetter() {
         const text = document.getElementById('coverLetterBody').textContent;
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Cover letter copied to clipboard!');
-        });
+        navigator.clipboard.writeText(text).then(() => { alert('Cover letter copied to clipboard!'); });
     }
 
     function toggleAlerts() {
-        alertEnabled = document.getElementById('alertToggle').checked;
-        if(alertEnabled) {
-            alert('Daily alerts enabled! The system will check for new jobs daily and email andream.b.101@gmail.com.');
-            // In a real backend, this would trigger an API call to save the preference.
-            // GitHub Actions will handle the actual email sending.
+        const isOn = document.getElementById('alertToggle').checked;
+        if(isOn) {
+            alert('Daily alerts enabled! The GitHub Action will email you new jobs every morning at 8:00 AM EST.');
         } else {
             alert('Alerts disabled.');
         }
     }
 
-    // Initial render
-    renderJobs();
+    // Load jobs immediately when the page opens
+    searchJobs('all', document.querySelector('.category-btn'));
 </script>
 
 </body>
