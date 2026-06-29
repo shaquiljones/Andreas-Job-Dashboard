@@ -100,6 +100,9 @@
 
     const ANDREA_EMAIL = "andream.b.101@gmail.com";
     
+    // The specific counties she wants to work in
+    const targetLocations = ["Essex County, NJ", "Union County, NJ", "Morris County, NJ"];
+
     // Resume templates for dynamic generation
     const resumeContext = {
         cosmetology: "As a recent graduate of South Florida State College’s Cosmetology program with a 4.0 GPA and 1,200 contact hours, I have honed my skills in precision cutting, chemical reformation, and color theory. My background in customer service ensures that I can build and maintain a loyal client base while delivering exceptional salon experiences.",
@@ -110,12 +113,18 @@
 
     const searchQueries = {
         'cosmetology': 'cosmetology hair stylist nail technician',
-        'customer-service': 'customer service representative remote',
+        'customer-service': 'customer service representative',
         'healthcare': 'patient care caregiver healthcare',
         'events': 'event coordinator gallery assistant'
     };
 
     let currentCategory = 'all';
+
+    // Function to strictly block NY jobs
+    function isBlockedLocation(locationStr) {
+        const blockedWords = ["NY", "New York", "Manhattan", "Brooklyn", "Bronx", "Queens", "Staten Island"];
+        return blockedWords.some(word => locationStr.includes(word));
+    }
 
     async function searchJobs(category, btn) {
         if (btn) {
@@ -124,32 +133,70 @@
         }
         currentCategory = category;
         const board = document.getElementById('jobBoard');
-        board.innerHTML = '<div class="loading">Fetching fresh job leads...</div>';
+        board.innerHTML = '<div class="loading">Searching Essex, Union, Morris counties & Remote leads...</div>';
 
         let categoriesToSearch = category === 'all' ? Object.keys(searchQueries) : [category];
         let allJobs = [];
+        let seenUrls = new Set(); // Prevent duplicate job postings
 
         for (let cat of categoriesToSearch) {
             const query = searchQueries[cat];
-            const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&what=${query}&where=East+Orange%2C+NJ&distance=20&results_per_page=8&sort_by=date`;
             
+            // 1. Search the specific NJ Counties
+            for (let loc of targetLocations) {
+                const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&what=${query}&where=${encodeURIComponent(loc)}&distance=10&results_per_page=8&sort_by=date`;
+                
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    if (data.results) {
+                        data.results.forEach(job => {
+                            // Apply the NY Blocker and check for duplicates
+                            if (!seenUrls.has(job.redirect_url) && !isBlockedLocation(job.location.display_name)) {
+                                seenUrls.add(job.redirect_url);
+                                allJobs.push({
+                                    title: job.title,
+                                    company: job.company.display_name,
+                                    location: job.location.display_name,
+                                    url: job.redirect_url,
+                                    description: job.description.substring(0, 250) + '...',
+                                    category: cat
+                                });
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching jobs for " + loc, error);
+                }
+            }
+
+            // 2. Search for Remote positions
+            const remoteUrl = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${ADZUNA_APP_ID}&app_key=${ADZUNA_APP_KEY}&what=remote+${query}&where=USA&results_per_page=5&sort_by=date`;
             try {
-                const response = await fetch(url);
+                const response = await fetch(remoteUrl);
                 const data = await response.json();
                 if (data.results) {
                     data.results.forEach(job => {
-                        allJobs.push({
-                            title: job.title,
-                            company: job.company.display_name,
-                            location: job.location.display_name,
-                            url: job.redirect_url,
-                            description: job.description.substring(0, 250) + '...',
-                            category: cat
-                        });
+                        const titleLower = job.title.toLowerCase();
+                        const locLower = job.location.display_name.toLowerCase();
+                        // Only add if the job is actually remote
+                        const isRemote = titleLower.includes("remote") || locLower.includes("remote");
+                        
+                        if (!seenUrls.has(job.redirect_url) && isRemote) {
+                            seenUrls.add(job.redirect_url);
+                            allJobs.push({
+                                title: job.title,
+                                company: job.company.display_name,
+                                location: "Remote",
+                                url: job.redirect_url,
+                                description: job.description.substring(0, 250) + '...',
+                                category: cat
+                            });
+                        }
                     });
                 }
             } catch (error) {
-                console.error("Error fetching jobs for " + cat, error);
+                console.error("Error fetching remote jobs", error);
             }
         }
 
@@ -161,7 +208,7 @@
         board.innerHTML = '';
         
         if (jobs.length === 0) {
-            board.innerHTML = '<p style="text-align: center; color: var(--primary); font-size: 1.2rem;">No new jobs found today. Check back tomorrow!</p>';
+            board.innerHTML = '<p style="text-align: center; color: var(--primary); font-size: 1.2rem;">No new jobs found in your target counties today. Check back tomorrow!</p>';
             return;
         }
 
