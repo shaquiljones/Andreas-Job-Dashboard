@@ -7,29 +7,33 @@ ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID")
 ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY")
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 
-# Andrea's details
 ANDREA_EMAIL = "andream.b.101@gmail.com"
-LOCATION = "East Orange, NJ"
+TARGET_LOCATIONS = ["Essex County, NJ", "Union County, NJ", "Morris County, NJ"]
 
-# Job categories based on her resume
 SEARCH_TERMS = ["Cosmetology", "Customer Service Representative", "Patient Care Advocate", "Event Coordinator"]
+
+BLOCKED_WORDS = ["NY", "New York", "Manhattan", "Brooklyn", "Bronx", "Queens", "Staten Island"]
 
 def get_jobs():
     all_jobs = []
     for term in SEARCH_TERMS:
-        url = f"https://api.adzuna.com/v1/api/jobs/us/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&what={term}&where={LOCATION}&distance=20&results_per_page=5"
-        try:
-            response = requests.get(url)
-            data = response.json()
-            for job in data.get("results", []):
-                all_jobs.append({
-                    "title": job.get("title"),
-                    "company": job.get("company", {}).get("display_name", "Unknown"),
-                    "url": job.get("redirect_url"),
-                    "description": job.get("description", "No description provided.")[:200] + "..."
-                })
-        except Exception as e:
-            print(f"Error fetching {term}: {e}")
+        for loc in TARGET_LOCATIONS:
+            url = f"https://api.adzuna.com/v1/api/jobs/us/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&what={term}&where={loc}&distance=10&results_per_page=5"
+            try:
+                response = requests.get(url)
+                data = response.json()
+                for job in data.get("results", []):
+                    loc_str = job.get("location", {}).get("display_name", "")
+                    # Strict block on NY locations
+                    if not any(word in loc_str for word in BLOCKED_WORDS):
+                        all_jobs.append({
+                            "title": job.get("title"),
+                            "company": job.get("company", {}).get("display_name", "Unknown"),
+                            "url": job.get("redirect_url"),
+                            "description": job.get("description", "No description provided.")[:200] + "..."
+                        })
+            except Exception as e:
+                print(f"Error fetching {term} in {loc}: {e}")
     return all_jobs
 
 def send_email(jobs):
@@ -37,9 +41,8 @@ def send_email(jobs):
         print("No jobs found today. No email sent.")
         return
 
-    # Build HTML email
     html_content = "<h2 style='color:#001F3F;'>Daily Job Leads for Andrea</h2>"
-    html_content += "<p>Here are the latest opportunities near East Orange, NJ tailored to your resume.</p><hr>"
+    html_content += "<p>Here are the latest opportunities in Essex, Union, and Morris counties.</p><hr>"
     
     for job in jobs:
         html_content += f"""
@@ -51,7 +54,6 @@ def send_email(jobs):
         </div>
         """
 
-    # Send via SendGrid
     headers = {
         "Authorization": f"Bearer {SENDGRID_API_KEY}",
         "Content-Type": "application/json"
@@ -60,10 +62,10 @@ def send_email(jobs):
         "personalizations": [
             {
                 "to": [{"email": ANDREA_EMAIL}],
-                "subject": f"Daily Job Dashboard: {len(jobs)} New Leads Found!"
+                "subject": f"Daily Job Dashboard: {len(jobs)} New NJ Leads Found!"
             }
         ],
-        "from": {"email": ANDREA_EMAIL}, # Using her own email as sender (verified by default on free tier)
+        "from": {"email": ANDREA_EMAIL},
         "content": [{"type": "text/html", "value": html_content}]
     }
     
